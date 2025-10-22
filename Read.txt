@@ -1,0 +1,21 @@
+frontend/src/
+├── api/             # 📞 Lógica de comunicación con la API REST (Axios)
+│   ├── axios.js     # Cliente de Axios configurado con el token
+│   ├── auth.js      # Servicios de login/logout/registro (si existiera)
+│   ├── user.js      # Servicios para /api/users
+│   ├── client.js    # Servicios para /api/clients
+│   └── publication.js # Servicios para /api/publications
+├── components/      # 🧩 Componentes UI reutilizables
+│   ├── common/      # Botones, modales, alertas, navegación
+│   └── layouts/     # Layouts (AdminLayout, ClientLayout, AuthLayout)
+├── contexts/        # 🌐 Contextos de React para estado global
+│   ├── AuthContext.jsx  # Gestión del estado de usuario y token
+│   └── SocketContext.jsx # Contexto para la conexión de Socket.IO
+├── hooks/           # 🎣 Hooks personalizados (ej: useAuth, useApiData)
+├── pages/           # 📄 Vistas principales/páginas (se conectan a las rutas)
+│   ├── admin/       # Páginas protegidas para el ADMIN
+│   ├── client/      # Páginas protegidas para el CLIENTE
+│   └── auth/        # Páginas de Login/Registro
+├── utils/           # 💡 Funciones de ayuda (formatos, validaciones, etc.)
+├── main.jsx         # Punto de entrada de Vite
+└── App.jsx          # Componente principal y Router
