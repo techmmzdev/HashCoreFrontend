@@ -43,45 +43,56 @@ export const SocketProvider = ({ children }) => {
 
     console.log("[Socket] 🚀 Iniciando conexión con:", SOCKET_URL);
 
-    const newSocket = io(SOCKET_URL, {
-      transports: ["websocket", "polling"],
-      reconnection: true,
-      reconnectionAttempts: 5,
-      auth: {
-        token,
-        role: user?.role,
-      },
-    });
+    try {
+      const newSocket = io(SOCKET_URL, {
+        transports: ["websocket", "polling"],
+        reconnection: true,
+        reconnectionAttempts: 5,
+        timeout: 20000,
+        auth: {
+          token,
+          role: user?.role,
+        },
+      });
 
-    // 4️⃣ Eventos del socket
-    newSocket.on("connect", () => {
-      console.log(`[Socket] ✅ Conectado al servidor con ID: ${newSocket.id}`);
+      // 4️⃣ Eventos del socket
+      newSocket.on("connect", () => {
+        console.log(
+          `[Socket] ✅ Conectado al servidor con ID: ${newSocket.id}`
+        );
 
-      if (isAdmin) {
-        newSocket.emit("join_admin_notifications", user.id);
-      } else if (isAuthenticated) {
-        newSocket.emit("join_client_room", user.id);
-      }
-    });
+        if (isAdmin) {
+          newSocket.emit("join_admin_notifications", user.id);
+        } else if (isAuthenticated) {
+          newSocket.emit("join_client_room", user.id);
+        }
+      });
 
-    newSocket.on("disconnect", (reason) => {
-      console.warn("[Socket] ⚠️ Desconectado. Razón:", reason);
-    });
+      newSocket.on("disconnect", (reason) => {
+        console.warn("[Socket] ⚠️ Desconectado. Razón:", reason);
+      });
 
-    newSocket.on("new_publication_pending", (data) => {
-      console.log("[Socket/Admin] 📢 Nueva publicación pendiente:", data);
-    });
+      newSocket.on("connect_error", (error) => {
+        console.error("[Socket] ❌ Error de conexión:", error);
+      });
 
-    setSocket(newSocket);
+      newSocket.on("new_publication_pending", (data) => {
+        console.log("[Socket/Admin] 📢 Nueva publicación pendiente:", data);
+      });
 
-    // 5️⃣ Cleanup al desmontar
-    return () => {
-      console.log(
-        "[Socket] 🔌 Desconectando socket al desmontar o cambio de auth..."
-      );
-      newSocket.off();
-      newSocket.disconnect();
-    };
+      setSocket(newSocket);
+
+      // 5️⃣ Cleanup al desmontar
+      return () => {
+        console.log(
+          "[Socket] 🔌 Desconectando socket al desmontar o cambio de auth..."
+        );
+        newSocket.off();
+        newSocket.disconnect();
+      };
+    } catch (error) {
+      console.error("[Socket] ❌ Error al crear conexión WebSocket:", error);
+    }
   }, [isAuthenticated, isAdmin, user?.id]);
 
   return (

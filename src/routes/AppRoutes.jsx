@@ -26,15 +26,10 @@ import ClientPublicationsList from "@/pages/client/ClientPublicationsList.jsx";
 // import ClientCalendarPage from "@/pages/client/ClientCalendarPage.jsx";
 
 const AppRoutes = () => {
-  const { user, loading, loggingOut, isAdmin, isClient } = useAuth();
+  const { user, loading, isAdmin, isClient } = useAuth();
 
-  if (loading || loggingOut) {
-    return (
-      <Loading
-        fullScreen
-        message={loggingOut ? "Cerrando sesión..." : "Verificando sesión..."}
-      />
-    );
+  if (loading) {
+    return <Loading fullScreen message="Verificando sesión..." />;
   }
 
   return (

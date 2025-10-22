@@ -26,7 +26,23 @@ api.interceptors.request.use(
   }
 );
 
-// Opcional: Interceptor de respuesta para manejar 401/403 (desconexión forzada)
-// Lo haremos más tarde en el AuthContext.
+// Interceptor de respuesta para manejar errores de autenticación
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Si el token es inválido o expiró, limpiar el localStorage
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      localStorage.removeItem("token");
+      // Evitar bucles infinitos de redirección
+      if (
+        !window.location.pathname.includes("/") ||
+        window.location.pathname !== "/"
+      ) {
+        window.location.href = "/";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;
